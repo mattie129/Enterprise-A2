@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using API.Models;
+using API.Models.Entities;
+using API.Models.Helpers;
 using API.Services;
 
 
@@ -13,22 +14,29 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PeopleController : ControllerBase
+    public class UserController : ControllerBase
     {
-        //private PeopleDbContext _db = new PeopleDbContext();
+        private ImageDatabase _db = new ImageDatabase();
 
-
-
-        
-
-
-/*
         [HttpPost]
-        public async Task<IActionResult> PopulatePeople(Person[] people)
-        {
-            await _db.People.AddRangeAsync(people);
-            await _db.SaveChangesAsync();
-            return Created("", "Database poplulated");
-        }*/
+        public async Task<IActionResult> AddUser(User user){
+            // return _items.SingleOrDefault(x => x.Id == id);
+            var emailInDb = await _db.Users.SingleOrDefaultAsync(x => user.Email == x.Email);
+
+            //if (){}
+            if (user.Email == null){
+                return BadRequest("Invalid email");
+            } else if (user.Name == null || user.Name == ""){
+                return BadRequest("Invalid name");
+            } else if (emailInDb == null){
+                await _db.Users.AddAsync(user);
+                await _db.SaveChangesAsync();
+                return Created("", "User Added");
+            } else{
+                return BadRequest("Email already in use");
+            }
+            
+        }
+
     }
 }
