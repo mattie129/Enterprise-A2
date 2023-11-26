@@ -20,6 +20,8 @@ namespace API.Controllers
     {
         private ImageDatabase _db = new ImageDatabase();
 
+        [HttpGet("byTag")]
+
         [HttpGet("{imageId}")]
         public async Task<IActionResult> GetProfessorById(Guid imageID)
         {

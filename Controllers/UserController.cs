@@ -19,8 +19,7 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private ImageDatabase _db = new ImageDatabase();
-        
-        
+           
         [HttpPost]
         public async Task<IActionResult> AddUser(User user){
             var emailInDb = await _db.Users.SingleOrDefaultAsync(x => user.Email == x.Email);
