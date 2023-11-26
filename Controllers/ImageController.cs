@@ -22,6 +22,22 @@ namespace API.Controllers
 
 
 
+        [HttpGet("populartags")]
+        public async Task<IActionResult> GetPopularTags()
+        {
+            var popularTags = _db.Tags
+                .GroupBy(tag => tag.Text) 
+                .OrderByDescending(group => group.Count()) 
+                .Take(5) 
+                .Select(group => new { Tag = group.Key, Count = group.Count() })
+                .ToList();
+
+            return Ok(popularTags);
+        }
+
+
+
+
         [HttpGet("random")]
         public async Task<IActionResult> GetRandomImages(int count)
         {
