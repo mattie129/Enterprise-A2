@@ -35,6 +35,7 @@ namespace API.Controllers
             } else{
                 return BadRequest("Email already in use");
             }
+            //
             
         }
 
