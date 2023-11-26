@@ -22,6 +22,8 @@ namespace API.Models.Entities
         
         private bool IsValidEmail(string email)
         {
+            //regex: *@*.*
+            //(email format)
             string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
             return Regex.IsMatch(email, pattern);
         }

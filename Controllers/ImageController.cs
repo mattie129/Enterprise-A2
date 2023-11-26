@@ -44,6 +44,8 @@ namespace API.Controllers
             var allImages = _db.Images.ToList(); 
 
             var random = new Random();
+
+            //randomize list then return specified amount
             var randomImages = allImages
                                         .OrderBy(x => random.Next())
                                         .Take(count)
@@ -65,15 +67,21 @@ namespace API.Controllers
 
             if (images.Count == 0)
             {
-                return NotFound("No images found with the given tag.");
+                return NotFound("No images found with given tag.");
             }
- 
-            return Ok(images);
+
+            var response = new PagedResponse<Image>(images);
+            var total = await _db.Images.CountAsync();
+            
+            response.Links = LinksGenerator.GenerateLinks("/api/Image", page, total, pageSize);
+
+            return Ok(response);
+            
         }
 
 
         [HttpGet("{imageId}")]
-        public async Task<IActionResult> GetProfessorById(Guid imageID)
+        public async Task<IActionResult> GetImageById(Guid imageID)
         {
             var image = await _db.Images.FirstOrDefaultAsync(x => x.Id == imageID);
             if (image == null)
@@ -99,7 +107,7 @@ namespace API.Controllers
             var total = await _db.Images.CountAsync();
 
             
-            response.Links = LinksGenerator.GenerateLinks("/api/People", page, total, pageSize);
+            response.Links = LinksGenerator.GenerateLinks("/api/Image", page, total, pageSize);
 
             return Ok(response);
             
@@ -122,8 +130,8 @@ namespace API.Controllers
 
                 user.Images.Add(image);
 
+                //generate tags from ImageHelper, and add each tag from image to database
                 IEnumerable<string> tags = ImageHelper.GetTags(image.Url);
-
                 foreach (var tagText in tags)
                 {
                     Tag tag = new Tag { Text = tagText };
@@ -136,17 +144,16 @@ namespace API.Controllers
                 await _db.SaveChangesAsync();
 
 
-                //TODO: Fix this 
-
-                return Ok(user);
-
-
-                if (user.Images.Count >= 10){
-                    var lastTenImages = user.Images.OrderByDescending(i => i.PostingDate).Take(10).ToList();
-                    return Ok(new { User = user, LastTenImages = lastTenImages });
-
+                //return first 10                
+                if (user.Images.Count < 10)
+                {
+                    var images = user.Images.OrderByDescending(i => i.PostingDate).ToList();
+                    return Ok(images);
+                }else {
+                    var images = user.Images.OrderByDescending(i => i.PostingDate).Take(10);
+                    return Ok(images);
                 }
-                return Ok(user.Images);
+
             }
 
             return NotFound("User not found");

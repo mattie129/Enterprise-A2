@@ -15,8 +15,17 @@ namespace PeopleAPI.Services
         {
             var result = new Dictionary<string, string>();
             int totalPages = (int)Math.Ceiling((decimal)totalRecords / (decimal)pageSize);
-            result.Add("First", $"{baseURL}?pageNumber=1&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
-            result.Add("Next", currentPage == totalPages ? "" : $"{baseURL}?pageNumber={currentPage + 1}&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
+            result.Add("First", $"{baseURL}?page=1&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
+            if (currentPage != 1){
+                result.Add("Previous", $"{baseURL}?page={currentPage - 1}&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
+            }
+            if (currentPage != totalPages){
+                result.Add("Next",  $"{baseURL}?page={currentPage + 1}&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
+            }
+            result.Add("Last", currentPage == totalPages ? "" : $"{baseURL}?page={totalPages}&pagesize={pageSize}"); // /api/people?pageNumber=1&pagesize=10
+
+
+
             return result;
         }
     }
