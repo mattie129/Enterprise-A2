@@ -18,7 +18,7 @@ namespace API.Models.Entities
             }
         }}
         public string Name { get; set; }
-        public List<Image> Images { get; set; }
+        public List<Image>? Images { get; set; }
         
         private bool IsValidEmail(string email)
         {
