@@ -20,7 +20,41 @@ namespace API.Controllers
     {
         private ImageDatabase _db = new ImageDatabase();
 
+
+
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandomImages(int count)
+        {
+            var allImages = _db.Images.ToList(); 
+
+            var random = new Random();
+            var randomImages = allImages
+                                        .OrderBy(x => random.Next())
+                                        .Take(count)
+                                        .ToList();
+
+            return Ok(randomImages);
+        }
+
+
         [HttpGet("byTag")]
+        public async Task<IActionResult> GetImagesByTag(string tag, int page = 1, int pageSize = 10)
+        {
+            var images = _db.Images
+                .Where(i => i.Tags.Any(t => t.Text == tag))
+                .OrderByDescending(i => i.PostingDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            if (images.Count == 0)
+            {
+                return NotFound("No images found with the given tag.");
+            }
+ 
+            return Ok(images);
+        }
+
 
         [HttpGet("{imageId}")]
         public async Task<IActionResult> GetProfessorById(Guid imageID)
